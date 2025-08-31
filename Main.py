@@ -62,11 +62,13 @@ login_manager.login_view = 'auth.login'
 # Initialize session support
 from flask_session import Session
 sess = Session()
-app.config['SESSION_TYPE'] = SESSION_TYPE
-app.config['SESSION_FILE_DIR'] = SESSION_FILE_DIR
-app.config['SESSION_PERMANENT'] = SESSION_PERMANENT
-os.makedirs(app.config['SESSION_FILE_DIR'], exist_ok=True)
-sess.init_app(app)
+# Use server-side sessions only if not on Vercel
+if not os.environ.get('VERCEL', False):
+    app.config['SESSION_TYPE'] = SESSION_TYPE
+    app.config['SESSION_FILE_DIR'] = SESSION_FILE_DIR
+    app.config['SESSION_PERMANENT'] = SESSION_PERMANENT
+    os.makedirs(app.config['SESSION_FILE_DIR'], exist_ok=True)
+    sess.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
